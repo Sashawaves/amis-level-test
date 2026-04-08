@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>族語程度自我評估測驗｜O Pinokayan A Lalan.</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper:     #FDF6EE;
+    --parchment: #F5E8D5;
+    --sand:      #E8D0B0;
+    --coral:     #C94A3A;
+    --coral-o:   #D96B4A;
+    --gold:      #C8882A;
+    --ink:       #2C1A10;
+    --ink-l:     #5C3D28;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Noto Serif TC', serif;
+    min-height: 100vh;
+    padding: 2rem 1rem 4rem;
+    position: relative;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 70% 50% at 15% 10%, rgba(200,136,42,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 70% at 85% 90%, rgba(201,74,58,0.06) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
+  /* ── header ── */
+  .header {
+    text-align: center;
+    padding: 1.5rem 0 2rem;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .greeting {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 0.85rem;
+    color: var(--gold);
+    letter-spacing: 0.2em;
+    margin-bottom: 0.8rem;
+  }
+
+  .header h1 {
+    font-size: 1.35rem;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--ink);
+    margin-bottom: 0.6rem;
+  }
+
+  .header p {
+    font-size: 0.78rem;
+    color: var(--ink-l);
+    line-height: 1.7;
+    opacity: 0.8;
+  }
+
+  .divider {
+    width: 40px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--coral), var(--gold));
+    margin: 1rem auto;
+    border-radius: 2px;
+  }
+
+  /* ── progress ── */
+  .progress-wrap {
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.6s 0.1s ease both;
+    opacity: 0;
+  }
+
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    color: var(--ink-l);
+    opacity: 0.7;
+    margin-bottom: 0.4rem;
+  }
+
+  .progress-bar {
+    height: 4px;
+    background: var(--sand);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--coral), var(--gold));
+    border-radius: 4px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  /* ── question card ── */
+  .question-card {
+    background: white;
+    border: 1.5px solid var(--sand);
+    border-radius: 16px;
+    padding: 1.8rem 1.5rem;
+    margin-bottom: 1rem;
+    animation: fadeUp 0.5s ease both;
+    display: none;
+  }
+
+  .question-card.active {
+    display: block;
+  }
+
+  .q-number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.78rem;
+    color: var(--coral);
+    letter-spacing: 0.15em;
+    margin-bottom: 0.6rem;
+  }
+
+  .q-text {
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--ink);
+    margin-bottom: 1.2rem;
+  }
+
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .option {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+    padding: 0.85rem 1rem;
+    border: 1.5px solid var(--sand);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    background: var(--paper);
+    text-align: left;
+    font-family: 'Noto Serif TC', serif;
+    font-size: 0.82rem;
+    color: var(--ink);
+    line-height: 1.5;
+    width: 100%;
+  }
+
+  .option:hover {
+    border-color: var(--coral-o);
+    background: var(--parchment);
+  }
+
+  .option.selected {
+    border-color: var(--coral);
+    background: rgba(201,74,58,0.06);
+  }
+
+  .option-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--coral);
+    flex-shrink: 0;
+    min-width: 18px;
+  }
+
+  .option.selected .option-label {
+    color: var(--coral);
+  }
+
+  /* ── nav buttons ── */
+  .nav {
+    display: flex;
+    gap: 0.8rem;
+    margin-top: 1rem;
+    justify-content: flex-end;
+  }
+
+  .btn {
+    padding: 0.7rem 1.4rem;
+    border-radius: 8px;
+    font-family: 'Noto Serif TC', serif;
+    font-size: 0.82rem;
+    cursor: pointer;
+    border: none;
+    transition: all 0.18s ease;
+  }
+
+  .btn-back {
+    background: transparent;
+    border: 1.5px solid var(--sand);
+    color: var(--ink-l);
+  }
+
+  .btn-back:hover {
+    border-color: var(--coral-o);
+    color: var(--coral);
+  }
+
+  .btn-next {
+    background: linear-gradient(135deg, var(--coral), var(--coral-o));
+    color: white;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    opacity: 0.4;
+    pointer-events: none;
+    transition: all 0.18s ease;
+  }
+
+  .btn-next.ready {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .btn-next.ready:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(201,74,58,0.3);
+  }
+
+  /* ── result ── */
+  .result-card {
+    display: none;
+    background: white;
+    border: 1.5px solid var(--sand);
+    border-radius: 16px;
+    overflow: hidden;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .result-card.show {
+    display: block;
+  }
+
+  .result-header {
+    padding: 2rem 1.5rem 1.5rem;
+    text-align: center;
+    border-bottom: 1px solid var(--parchment);
+  }
+
+  .result-emoji {
+    font-size: 2.8rem;
+    margin-bottom: 0.8rem;
+    display: block;
+  }
+
+  .result-type {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 0.8rem;
+    color: var(--gold);
+    letter-spacing: 0.2em;
+    margin-bottom: 0.4rem;
+  }
+
+  .result-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--coral);
+    margin-bottom: 0.8rem;
+  }
+
+  .result-desc {
+    font-size: 0.82rem;
+    color: var(--ink-l);
+    line-height: 1.8;
+  }
+
+  .result-body {
+    padding: 1.5rem;
+  }
+
+  .result-section {
+    margin-bottom: 1.2rem;
+  }
+
+  .result-section-title {
+    font-size: 0.72rem;
+    color: var(--gold);
+    letter-spacing: 0.15em;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+  }
+
+  .result-start {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1.2rem;
+    background: linear-gradient(135deg, var(--coral), var(--coral-o));
+    color: white;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none;
+    margin-top: 0.3rem;
+    transition: all 0.18s ease;
+  }
+
+  .result-start:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(201,74,58,0.3);
+  }
+
+  .result-task {
+    background: var(--parchment);
+    border-left: 3px solid var(--gold);
+    padding: 0.9rem 1rem;
+    border-radius: 0 8px 8px 0;
+    font-size: 0.8rem;
+    line-height: 1.7;
+    color: var(--ink);
+  }
+
+  .result-footer {
+    text-align: center;
+    padding: 1.2rem 1.5rem 1.5rem;
+    border-top: 1px solid var(--parchment);
+  }
+
+  .result-footer-amis {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 0.88rem;
+    color: var(--coral);
+    letter-spacing: 0.1em;
+    margin-bottom: 0.2rem;
+  }
+
+  .result-footer-zh {
+    font-size: 0.7rem;
+    color: var(--ink-l);
+    opacity: 0.6;
+  }
+
+  .btn-retry {
+    display: block;
+    width: 100%;
+    margin-top: 1rem;
+    padding: 0.65rem;
+    background: transparent;
+    border: 1.5px solid var(--sand);
+    border-radius: 8px;
+    font-family: 'Noto Serif TC', serif;
+    font-size: 0.78rem;
+    color: var(--ink-l);
+    cursor: pointer;
+    transition: all 0.18s;
+  }
+
+  .btn-retry:hover {
+    border-color: var(--coral-o);
+    color: var(--coral);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <div class="greeting">✦ O Pinokayan A Lalan. ✦</div>
+    <h1>我的族語程度在哪裡？</h1>
+    <div class="divider"></div>
+    <p>五個問題，找到最適合你的起點<br>花兩分鐘，讓學習更有方向</p>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-label">
+      <span id="progress-text">問題 1 / 5</span>
+      <span id="progress-pct">0%</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+  </div>
+
+  <!-- Q1 -->
+  <div class="question-card active" id="q1">
+    <div class="q-number">問題一</div>
+    <div class="q-text">你聽到族語，大概能聽懂幾成？</div>
+    <div class="options">
+      <button class="option" data-q="1" data-val="A">
+        <span class="option-label">A</span>完全聽不懂，像在聽外星語
+      </button>
+      <button class="option" data-q="1" data-val="B">
+        <span class="option-label">B</span>偶爾聽懂一兩個字
+      </button>
+      <button class="option" data-q="1" data-val="C">
+        <span class="option-label">C</span>能聽懂簡單問候 Icowa kiso?
+      </button>
+      <button class="option" data-q="1" data-val="D">
+        <span class="option-label">D</span>能大概理解對話方向
+      </button>
+    </div>
+    <div class="nav">
+      <button class="btn btn-next" id="next-1" onclick="goNext(1)">下一題 →</button>
+    </div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="question-card" id="q2">
+    <div class="q-number">問題二</div>
+    <div class="q-text">你現在會開口說族語嗎？</div>
+    <div class="options">
+      <button class="option" data-q="2" data-val="A">
+        <span class="option-label">A</span>完全不敢開口
+      </button>
+      <button class="option" data-q="2" data-val="B">
+        <span class="option-label">B</span>看著羅馬拼音我會唸，但不知道含意
+      </button>
+      <button class="option" data-q="2" data-val="C">
+        <span class="option-label">C</span>能說簡單的自我介紹和問候長輩
+      </button>
+      <button class="option" data-q="2" data-val="D">
+        <span class="option-label">D</span>能進行簡單日常對話
+      </button>
+    </div>
+    <div class="nav">
+      <button class="btn btn-back" onclick="goBack(2)">← 上一題</button>
+      <button class="btn btn-next" id="next-2" onclick="goNext(2)">下一題 →</button>
+    </div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="question-card" id="q3">
+    <div class="q-number">問題三</div>
+    <div class="q-text">你有接受過族語教學嗎？</div>
+    <div class="options">
+      <button class="option" data-q="3" data-val="A">
+        <span class="option-label">A</span>沒有，完全零接觸
+      </button>
+      <button class="option" data-q="3" data-val="B">
+        <span class="option-label">B</span>小時候有聽過，但現在忘光了
+      </button>
+      <button class="option" data-q="3" data-val="C">
+        <span class="option-label">C</span>有上過課或自學過一段時間
+      </button>
+      <button class="option" data-q="3" data-val="D">
+        <span class="option-label">D</span>有備考或通過初級、中級認證的經驗
+      </button>
+    </div>
+    <div class="nav">
+      <button class="btn btn-back" onclick="goBack(3)">← 上一題</button>
+      <button class="btn btn-next" id="next-3" onclick="goNext(3)">下一題 →</button>
+    </div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="question-card" id="q4">
+    <div class="q-number">問題四</div>
+    <div class="q-text">你學族語的最主要目標是？</div>
+    <div class="options">
+      <button class="option" data-q="4" data-val="A">
+        <span class="option-label">A</span>能和家人、長輩溝通
+      </button>
+      <button class="option" data-q="4" data-val="B">
+        <span class="option-label">B</span>通過族語認證考試
+      </button>
+      <button class="option" data-q="4" data-val="C">
+        <span class="option-label">C</span>深入了解阿美族文化
+      </button>
+      <button class="option" data-q="4" data-val="D">
+        <span class="option-label">D</span>不想讓語言消失
+      </button>
+    </div>
+    <div class="nav">
+      <button class="btn btn-back" onclick="goBack(4)">← 上一題</button>
+      <button class="btn btn-next" id="next-4" onclick="goNext(4)">下一題 →</button>
+    </div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="question-card" id="q5">
+    <div class="q-number">問題五</div>
+    <div class="q-text">你希望多快看到進步？</div>
+    <div class="options">
+      <button class="option" data-q="5" data-val="A">
+        <span class="option-label">A</span>慢慢來，來認識阿美族的朋友、一起學習
+      </button>
+      <button class="option" data-q="5" data-val="B">
+        <span class="option-label">B</span>我只要大概聽得懂單字，知道大家在說什麼就好
+      </button>
+      <button class="option" data-q="5" data-val="C">
+        <span class="option-label">C</span>希望豐年祭回部落至少能夠開口說幾句
+      </button>
+      <button class="option" data-q="5" data-val="D">
+        <span class="option-label">D</span>有考試壓力，需要三到六個月內準備好
+      </button>
+    </div>
+    <div class="nav">
+      <button class="btn btn-back" onclick="goBack(5)">← 上一題</button>
+      <button class="btn btn-next" id="next-5" onclick="showResult()">看結果 ✦</button>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div class="result-card" id="result-A">
+    <div class="result-header">
+      <span class="result-emoji">🌱</span>
+      <div class="result-type">你是</div>
+      <div class="result-title">阿美語新鮮人</div>
+      <div class="result-desc">
+        你可能從來沒有系統學過族語，<br>
+        或者小時候有接觸但已經完全陌生。<br><br>
+        這不是你的錯，是環境造成的。<br>
+        你需要的不是急著背單字，<br>
+        而是先讓耳朵習慣族語的聲音。
+      </div>
+    </div>
+    <div class="result-body">
+      <div class="result-section">
+        <div class="result-section-title">你的起點</div>
+        <a href="https://quizlet.com/tw/1156938459/%E7%BE%85%E9%A6%AC%E6%8B%BC%E9%9F%B3-flash-cards/?i=71pn70&x=1jqt" class="result-start" target="_blank">🏁 前往【字卡練習｜羅馬拼音】</a>
+      </div>
+      <div class="result-section">
+        <div class="result-section-title">你的第一個任務</div>
+        <div class="result-task">
+          先利用單字卡聽清楚每一個單字的發音，<br>
+          並嘗試模仿那些聲音出來，<br>
+          讓舌頭、喉嚨、聽覺習慣阿美語。<br>
+          連續幾天，你就會開始有感覺了！
+        </div>
+      </div>
+    </div>
+    <div class="result-footer">
+      <div class="result-footer-amis">Mapolong kita.</div>
+      <div class="result-footer-zh">我們一起回家</div>
+      <button class="btn-retry" onclick="resetQuiz()">重新測驗</button>
+    </div>
+  </div>
+
+  <div class="result-card" id="result-B">
+    <div class="result-header">
+      <span class="result-emoji">🌊</span>
+      <div class="result-type">你是</div>
+      <div class="result-title">沉睡的族語人</div>
+      <div class="result-desc">
+        你的身體裡其實有族語的記憶，<br>
+        只是太久沒有被喚醒！<br><br>
+        你不需要從零開始，<br>
+        你需要的是一個讓記憶重新活過來的環境。
+      </div>
+    </div>
+    <div class="result-body">
+      <div class="result-section">
+        <div class="result-section-title">你的起點</div>
+        <a href="https://quizlet.com/tw/1147250397/%E6%B5%B7%E5%B2%B8%E9%98%BF%E7%BE%8E%E8%AA%9E%E5%AD%B8%E7%BF%92%E8%A9%9E%E8%AA%9E-%E5%88%9D%E7%B4%9A-flash-cards/?i=71pn70&x=1jqt" class="result-start" target="_blank">🏁 快速複習【羅馬拼音單字卡】→【初級或中級字卡】</a>
+      </div>
+      <div class="result-section">
+        <div class="result-section-title">你的第一個任務</div>
+        <div class="result-task">
+          把遺忘的感覺找回來，也可以進階試著造句，<br>
+          把單字放在句子中，<br>
+          再到【文法小教室】確認文法對不對。<br>
+          其實你記得的比你以為的還要多！一起加油～
+        </div>
+      </div>
+    </div>
+    <div class="result-footer">
+      <div class="result-footer-amis">Mapolong kita.</div>
+      <div class="result-footer-zh">我們一起回家</div>
+      <button class="btn-retry" onclick="resetQuiz()">重新測驗</button>
+    </div>
+  </div>
+
+  <div class="result-card" id="result-C">
+    <div class="result-header">
+      <span class="result-emoji">🌿</span>
+      <div class="result-type">你是</div>
+      <div class="result-title">正在成長的學習者</div>
+      <div class="result-desc">
+        你已經有基礎。<br>
+        你遇到的最大問題可能是：<br>
+        學了會忘、說出來不自然、遇到長輩就緊張。<br><br>
+        推薦你直接從句子開始練習。
+      </div>
+    </div>
+    <div class="result-body">
+      <div class="result-section">
+        <div class="result-section-title">你的起點</div>
+        <a href="https://quizlet.com/tw/1147253817/%E6%B5%B7%E5%B2%B8%E9%98%BF%E7%BE%8E%E8%AA%9E%E5%AD%B8%E7%BF%92%E5%AD%97%E8%A9%9E%E4%B8%AD%E7%B4%9A-flash-cards/?i=71pn70&x=1jqt" class="result-start" target="_blank">🏁 前往【阿美族語料資料庫｜例句庫】</a>
+      </div>
+      <div class="result-section">
+        <div class="result-section-title">你的第一個任務</div>
+        <div class="result-task">
+          可依照自己的程度選擇初級、中級、高級，<br>
+          每天在文法小教室練習造一個句子，讓他幫你修正文法，<br>
+          再開口說出來，才是真的學會！
+        </div>
+      </div>
+    </div>
+    <div class="result-footer">
+      <div class="result-footer-amis">Mapolong kita.</div>
+      <div class="result-footer-zh">我們一起回家</div>
+      <button class="btn-retry" onclick="resetQuiz()">重新測驗</button>
+    </div>
+  </div>
+
+  <div class="result-card" id="result-D">
+    <div class="result-header">
+      <span class="result-emoji">🔥</span>
+      <div class="result-type">你是</div>
+      <div class="result-title">準備衝刺的備考者</div>
+      <div class="result-desc">
+        你有基礎，不如給自己一個目標，<br>
+        挑戰族語認證！<br><br>
+        你現在缺的是精準的備考策略，<br>
+        和能陪你撐過考前最後一段路的夥伴。
+      </div>
+    </div>
+    <div class="result-body">
+      <div class="result-section">
+        <div class="result-section-title">你的起點</div>
+        <a href="https://www.skool.com/o-pinokayan-a-lalan-4716/classroom/7a309ead?md=50590f11f8dc44ba8a7ad4123a15196c" class="result-start" target="_blank">🏁 前往【備考計畫｜努力前往下一級】</a>
+      </div>
+      <div class="result-section">
+        <div class="result-section-title">你的第一個任務</div>
+        <div class="result-task">
+          告訴 Usay 你要考試，<br>
+          我馬上幫你排出最精準的備考進度表！
+        </div>
+      </div>
+    </div>
+    <div class="result-footer">
+      <div class="result-footer-amis">Mapolong kita.</div>
+      <div class="result-footer-zh">我們一起回家</div>
+      <button class="btn-retry" onclick="resetQuiz()">重新測驗</button>
+    </div>
+  </div>
+
+  <div class="result-card" id="result-mixed">
+    <div class="result-header">
+      <span class="result-emoji">🧭</span>
+      <div class="result-type">你是</div>
+      <div class="result-title">需要客製化路徑的學習者</div>
+      <div class="result-desc">
+        你的答案很混合，代表你的學習需求比較複雜。<br>
+        這不是壞事——這代表你需要更精準的方向，<br>
+        而不是一個通用的公式。
+      </div>
+    </div>
+    <div class="result-body">
+      <div class="result-section">
+        <div class="result-section-title">你的第一個任務</div>
+        <div class="result-task">
+          去【私訊 Usay】聊聊，<br>
+          我們一起找出你最適合的路徑。<br>
+          不用準備什麼，直接說你在哪裡卡住就好。<br><br>
+          <a href="https://ig.me/m/shihyu_0606_" class="result-start" target="_blank" style="display:inline-flex;margin-top:0.5rem;">💬 私訊 Usay</a>
+        </div>
+      </div>
+    </div>
+    <div class="result-footer">
+      <div class="result-footer-amis">Mapolong kita.</div>
+      <div class="result-footer-zh">我們一起回家</div>
+      <button class="btn-retry" onclick="resetQuiz()">重新測驗</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const answers = {};
+
+  // option click
+  document.querySelectorAll('.option').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const q = this.dataset.q;
+      const val = this.dataset.val;
+
+      // deselect others in same question
+      document.querySelectorAll(`.option[data-q="${q}"]`).forEach(o => o.classList.remove('selected'));
+      this.classList.add('selected');
+
+      answers[q] = val;
+
+      // enable next button
+      const nextBtn = document.getElementById(`next-${q}`);
+      if (nextBtn) nextBtn.classList.add('ready');
+
+      updateProgress(parseInt(q));
+    });
+  });
+
+  function updateProgress(currentQ) {
+    const answered = Object.keys(answers).length;
+    const pct = Math.round((answered / 5) * 100);
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('progress-pct').textContent = pct + '%';
+    document.getElementById('progress-text').textContent = `問題 ${currentQ} / 5`;
+  }
+
+  function goNext(current) {
+    if (!answers[current]) return;
+    document.getElementById(`q${current}`).classList.remove('active');
+    const next = current + 1;
+    if (next <= 5) {
+      document.getElementById(`q${next}`).classList.add('active');
+      document.getElementById('progress-text').textContent = `問題 ${next} / 5`;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  function goBack(current) {
+    document.getElementById(`q${current}`).classList.remove('active');
+    const prev = current - 1;
+    if (prev >= 1) {
+      document.getElementById(`q${prev}`).classList.add('active');
+      document.getElementById('progress-text').textContent = `問題 ${prev} / 5`;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  function showResult() {
+    if (!answers[5]) return;
+
+    // hide all questions and progress
+    document.querySelectorAll('.question-card').forEach(c => c.classList.remove('active'));
+    document.querySelector('.progress-wrap').style.display = 'none';
+    document.querySelector('.header').style.display = 'none';
+
+    // count A B C D
+    const counts = { A: 0, B: 0, C: 0, D: 0 };
+    Object.values(answers).forEach(v => counts[v]++);
+
+    const max = Math.max(...Object.values(counts));
+    const winners = Object.keys(counts).filter(k => counts[k] === max);
+
+    let resultId;
+    if (winners.length === 1) {
+      resultId = 'result-' + winners[0];
+    } else {
+      // tie-break: D > C > B > A
+      const priority = ['D','C','B','A'];
+      resultId = 'result-' + priority.find(p => winners.includes(p));
+    }
+
+    // if truly mixed (e.g. all different)
+    if (max === 1 && winners.length >= 4) {
+      resultId = 'result-mixed';
+    }
+
+    document.getElementById(resultId).classList.add('show');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function resetQuiz() {
+    // reset answers
+    Object.keys(answers).forEach(k => delete answers[k]);
+
+    // reset UI
+    document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+    document.querySelectorAll('.btn-next').forEach(b => b.classList.remove('ready'));
+    document.querySelectorAll('.question-card').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.result-card').forEach(c => c.classList.remove('show'));
+
+    document.getElementById('q1').classList.add('active');
+    document.querySelector('.progress-wrap').style.display = 'block';
+    document.querySelector('.header').style.display = 'block';
+    document.getElementById('progress-fill').style.width = '0%';
+    document.getElementById('progress-pct').textContent = '0%';
+    document.getElementById('progress-text').textContent = '問題 1 / 5';
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>
